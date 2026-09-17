@@ -1,0 +1,56 @@
+name: E2E Scheduled Test
+
+on:
+  schedule:
+    # 每天北京时间 9:00 执行（UTC 1:00）
+    - cron: '0 1 * * *'
+  workflow_dispatch: # 支持手动触发
+
+jobs:
+  e2e-test:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: |
+          pip install pytest playwright pytest-playwright requests
+          playwright install chromium
+
+      - name: Run E2E tests
+        run: python -m pytest tests/e2e/ -v --tb=short
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-reports
+          path: tests/e2e/reports/
+
+      - name: Send email on failure
+        if: failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: 465
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "❌ E2E 测试失败 - ${{ github.run_number }}"
+          to: ${{ secrets.MAIL_TO }}
+          from: ${{ secrets.SMTP_USERNAME }}
+          body: |
+            E2E 页面巡检测试执行失败！
+
+            执行时间: ${{ github.event.head_commit.timestamp }}
+            运行详情: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+            请检查附件中的测试报告了解详情。
+          attachments: |
+            tests/e2e/reports/page_error_monitor_report.json
+            tests/e2e/reports/page_inspection_report.json
