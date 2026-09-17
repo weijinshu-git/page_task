@@ -33,10 +33,11 @@ def browser_type_launch_args(request):
     """配置浏览器启动参数"""
     chromium_path = r"C:\Users\weijinshu\AppData\Local\ms-playwright\chromium-1234\chrome-win64\chrome.exe"
     headed = request.config.getoption("--headed")
-    return {
-        "executable_path": chromium_path,
-        "headless": not headed,  # 默认无头，--headed 时有头
-    }
+    args = {"headless": not headed}
+    # 仅在本地 Chrome 存在时使用自定义路径，CI 环境使用 Playwright 默认 Chromium
+    if os.path.exists(chromium_path):
+        args["executable_path"] = chromium_path
+    return args
 
 
 @pytest.fixture(scope="function")
