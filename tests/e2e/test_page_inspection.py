@@ -35,6 +35,7 @@ KNOWN_CONSOLE_ERROR_PATTERNS = [
     "Failed to load resource: the server responded with a status of 401",  # 需登录的接口
     "google-analytics.com",  # Google Analytics 被网络拦截
     "ERR_ABORTED",  # 请求被中止
+    "event.anycubic.com",  # 埋点服务被浏览器拦截
 ]
 
 
