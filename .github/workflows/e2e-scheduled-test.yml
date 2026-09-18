@@ -18,6 +18,11 @@ jobs:
         with:
           python-version: '3.13'
 
+      - name: Set UTF-8 encoding for Windows
+        run: |
+          $env:PYTHONIOENCODING="utf-8"
+          [System.Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
       - name: Install dependencies
         run: |
           pip install pytest playwright pytest-playwright requests

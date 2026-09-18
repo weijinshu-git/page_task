@@ -71,6 +71,7 @@ KNOWN_EXTERNAL_URL_PATTERNS = [
     "facebook.com",
     "doubleclick.net",
     "/api/activity/prize-list",  # 抽奖页奖品列表接口，需登录
+    "cdn-acop.makeronline.com",  # CDN 资源被浏览器 ORB 拦截
 ]
 
 
